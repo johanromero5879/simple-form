@@ -17,24 +17,17 @@ interface FormProps<State> {
 
 export const useForm = <State>({ initialState, rules, onSubmit }: FormProps<State>) => {
     const [state, setState] = useState<State>({...initialState})
-    const [status, setStatus] = useState<Status>("IDLE")
+    const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState<FieldErrors<State>>({} as FieldErrors<State>)
 
     const submit = async () => {
-        setStatus("LOADING")
-        setTimeout(async () => {
-            try {
-                await onSubmit()
-                clearForm()
-            } catch (error) {
-                setStatus("ERROR")
-            }
-        }, 3000)
+        setLoading(true)
+        await onSubmit()
+        setLoading(false)
     }
 
     const clearForm = () => {
         setState({...initialState})
-        setStatus("IDLE")
     }
 
     const validate = () => {
@@ -62,7 +55,6 @@ export const useForm = <State>({ initialState, rules, onSubmit }: FormProps<Stat
             const errorMessage = rule(value)
 
             if (typeof errorMessage === "string" ) {
-                setStatus("ERROR")
                 return errorMessage
             }
         }
@@ -73,12 +65,12 @@ export const useForm = <State>({ initialState, rules, onSubmit }: FormProps<Stat
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (validate()) {
+        if (validate() && !loading) {
             submit()
         }
     }
 
-    const handleChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = ({ target }: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = target
         setState(state => {
             const field = name as keyof State
@@ -98,8 +90,9 @@ export const useForm = <State>({ initialState, rules, onSubmit }: FormProps<Stat
 
     return {
         state,
-        status,
+        loading,
         errors,
+        clearForm,
         handleChange,
         handleSubmit
     }

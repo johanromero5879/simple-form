@@ -4,12 +4,16 @@ import { useState } from "react"
 import { NewForm } from "@/models/form"
 import TextField from "@/components/TextField"
 import Select from "@/components/Select"
+import Alert from "@/components/Alert"
 import ConfirmationPanel from "@/components/ConfirmationPanel"
+
+import { registerForm } from "@/services"
 
 import { useForm, useCountries } from "@/hooks"
 
 export default function CreateFormPage() {
   const [submitted, setSubmitted] = useState(false)
+  const [alert, setAlert] = useState({ message: "", type: "", show: false })
   const { countries } = useCountries()
 
   const initialState = {
@@ -30,19 +34,39 @@ export default function CreateFormPage() {
   }
 
   const onSubmit = async () => {
-    setSubmitted(true)
+    try {
+      await registerForm(state)
+      clearForm()
+      setSubmitted(true)
+    } catch (error) {
+      if (error instanceof Error) {
+        showAlert(error.message, "error")
+      } else {
+        showAlert(error, "error")
+      }
+    }
   }
 
   const {
     state,
-    status,
+    loading,
     errors,
+    clearForm,
     handleChange,
     handleSubmit
   } = useForm<NewForm>({ initialState, rules, onSubmit })
 
+  const showAlert = (message: any, type: string) => {
+    setAlert({ message, type, show: true })
+
+    // Hide alert after 5 seconds
+    setTimeout(() => {
+      setAlert({ message: "", type: "", show: false })
+    }, 5000)
+  }
+
   return (
-    <div className="max-w-sm md:max-w-md">
+    <div className="max-w-xs sm:max-w-sm md:max-w-xl flex flex-col gap-4">
       {
         !submitted
           ?
@@ -50,7 +74,7 @@ export default function CreateFormPage() {
             <h1 className="my-6 text-6xl bg-gradient-to-r from-purple-500 from-10% via-indigo-300 via-30% to-emerald-400 to-90% bg-clip-text text-transparent">
               Simple Form
             </h1>
-            <p className="my-3 text-gray-500">
+            <p className="my-3 text-gray-400">
               Este es un simple formulario, donde ingresas tu nombre completo y país.
             </p>
             <form
@@ -82,11 +106,11 @@ export default function CreateFormPage() {
             <button
               type="submit"
               form="create-form"
-              disabled={status === "LOADING"}
-              className="mt-4 w-full rounded-md flex justify-center items-center gap-2 bg-purple-600 text-zinc-50 p-2 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="w-full rounded-md flex justify-center items-center gap-2 bg-purple-600 text-zinc-50 p-2 disabled:cursor-not-allowed"
             >
               {
-                status !== "LOADING"
+                !loading
                   ? "Guardar"
                   : <>
                     <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-r-transparent"></span>
@@ -94,6 +118,11 @@ export default function CreateFormPage() {
                   </>
               }
             </button>
+            <Alert 
+              message={alert.message}
+              type={alert.type}
+              show={alert.show}
+            />
           </>
         :
         <ConfirmationPanel 
