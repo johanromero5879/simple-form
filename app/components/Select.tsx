@@ -32,9 +32,9 @@ const Select = (
     }: SelectProps
 ) => {
     return (
-    <div className="w-full">
+    <div className="w-full text-gray-200">
         <label 
-            className="block text-sm text-gray-200"
+            className="block text-sm"
             htmlFor={name}
         >
         { label }
@@ -44,7 +44,7 @@ const Select = (
         </label>
         <div className="mt-2">
             <select
-                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 focus:outline-none"
+                className="block w-full rounded-md border-0 px-3.5 py-2 bg-gray-600 focus:outline-none"
                 id={name}
                 name={name}
                 value={value}
@@ -62,7 +62,7 @@ const Select = (
                         key={key}
                         value={item.value || item.label}
                     >
-                        { item.emoji }&emsp;{ item.label }
+                        { item.label } { item.emoji }&emsp;
                     </option>
                 )) }
                 

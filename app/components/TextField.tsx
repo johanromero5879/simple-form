@@ -24,9 +24,9 @@ const TextField = (
   }: TextFieldProps
 ) => {
     return (
-      <div className="w-full">
+      <div className="w-full text-gray-200">
         <label 
-          className="block text-sm text-gray-200"
+          className="block text-sm "
           htmlFor={name}
         >
           { label }
@@ -36,7 +36,7 @@ const TextField = (
         </label>
         <div className="mt-2">
           <input 
-            className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 focus:outline-none"
+            className="block w-full rounded-md border-0 px-3.5 py-2 bg-gray-600 focus:outline-none"
             type="text"
             id={name}
             name={name}
