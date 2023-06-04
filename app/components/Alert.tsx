@@ -5,27 +5,16 @@ interface AlertProps {
 }
 
 export default function Alert({ message, show, type = "info" }: AlertProps) {
-    let classes = ""
-    const theme = {
-        warning: "yellow-300",
-        error: "red-400",
-        info: "blue-400",
-        success: "green-400"
-    }
-
-    if (type === "warning") {
-        classes += `text-${theme.warning} border-${theme.warning}`
-    } else if (type === "error") {
-        classes += `text-${theme.error} border-${theme.error}`
-    } else if (type === "info") {
-        classes += `text-${theme.info} border-${theme.info}`
-    } else if (type === "success") {
-        classes += `text-${theme.success} border-${theme.success}`
+    const theme: any = {
+        warning: "text-yellow-200 border-yellow-200",
+        error: "text-red-400 border-red-400",
+        info: "text-blue-400 border-blue-400",
+        success: "text-green-400 border-green-400"
     }
 
     return <>
         {show &&
-            <div className={`${classes} rounded-md p-2 border-2 border-solid`}>
+            <div className={`rounded-md p-2 border-2 border-solid ${theme[type]}`}>
                 {
                     !Array.isArray(message)
                         ? message
